@@ -1,6 +1,10 @@
 package go_common_lib
 
-import "fmt"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+)
 
 func SliceContain(slice []string, item string) bool {
 	exist := false
@@ -36,4 +40,10 @@ func UpdateStructList(main []string, in []string) []string {
 		main = UpdateList(main, in[id])
 	}
 	return main
+}
+
+func CalcHash(aStr string) string {
+	hash := sha256.New()
+	hash.Write([]byte(aStr))
+	return hex.EncodeToString(hash.Sum(nil))
 }
