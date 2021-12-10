@@ -26,26 +26,10 @@ jobs:
       with:
         # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
         version: v1.43
-    #    args: --out-format checkstyle > checkstyle.xml 
     - name: Run vet
       run: |
         go vet .
     - name: Test
       run: go test -v -coverpkg=./... -coverprofile=profile.cov ./... -json > test_report.json
-    # - name: Archive test results
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: test_report.json
-    #     path: bin
     - name: Coverage
       run: go tool cover -func profile.cov
-    # - name: Archive code coverage results
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: profile.cov
-    #     path: bin
-    # - name: Analyze with SonarCloud
-    #   uses: sonarsource/sonarcloud-github-action@master
-    #   env:
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
