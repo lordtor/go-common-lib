@@ -24,10 +24,6 @@ jobs:
     - name: Run vet
       run: |
         go vet .
-    - name: Lint
-      uses: golangci/golangci-lint-action@v2
-      with:
-        version: v1.29
     - name: Test
       run: go test -v -coverpkg=./... -coverprofile=profile.cov ./... -json > test_report.json
     - name: Coverage
