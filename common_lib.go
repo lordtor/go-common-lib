@@ -142,6 +142,9 @@ func UpdateMapList(sliceMaps []map[string]string, itemMap map[string]string) []m
 func StandardizeSpaces(s string) string {
 	return strings.Join(strings.Fields(s), " ")
 }
+
+// A function for update slice string by splited values use slice spliters string
+// The return value is slice strings
 func UpdateListBySplit(slice []string, item string, spliters []string) []string {
 	split := false
 	char := ""
@@ -175,6 +178,8 @@ func UpdateListBySplit(slice []string, item string, spliters []string) []string 
 	return slice
 }
 
+// A function for convert interface to slice map
+// The return value is slice map or error
 func MapListConvert(in interface{}) ([]map[string]string, error) {
 	var out []map[string]string
 	r, err := json.Marshal(in)
