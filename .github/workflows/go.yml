@@ -21,7 +21,6 @@ jobs:
     - name: Install dependencies
       run: |
         go version
-        name: lint
     - name: Golangci-lint
       uses: golangci/golangci-lint-action@v2
       with:
