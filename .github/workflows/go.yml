@@ -21,11 +21,16 @@ jobs:
     - name: Install dependencies
       run: |
         go version
-    - name: Golangci-lint
-      uses: golangci/golangci-lint-action@v2
-      with:
-        # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
-        version: v1.43
+    # - name: Golangci-lint
+    #   uses: golangci/golangci-lint-action@v2
+    #   with:
+    #     # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
+    #     version: v1.43
+    - name: Install golangci-lint
+      run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.43
+
+    - name: Run golangci-lint
+      run: $(go env GOPATH)/bin/golangci-lint run --out-format checkstyle > checkstyle.xml 
     - name: Run vet
       run: |
         go vet .
