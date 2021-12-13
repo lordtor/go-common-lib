@@ -1,5 +1,7 @@
 # Go common lib
 
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=lordtor_go-common-lib&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=lordtor_go-common-lib) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=lordtor_go-common-lib&metric=bugs)](https://sonarcloud.io/summary/new_code?id=lordtor_go-common-lib) [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=lordtor_go-common-lib&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=lordtor_go-common-lib) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=lordtor_go-common-lib&metric=coverage)](https://sonarcloud.io/summary/new_code?id=lordtor_go-common-lib)
+
 Tis module used as smaple module for most popular func.
 
 ## ENV parameters
