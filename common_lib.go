@@ -37,6 +37,21 @@ func SliceContain(slice []string, item string) bool {
 	return exist
 }
 
+// A function to check slice contain item string
+// The return value is bool
+func CheckStingSliceContain(ctx context.Context, slice []string, item string) bool {
+	_, span := jarger.NewSpan(ctx, "Lib.CheckStingSliceContain", nil)
+	defer span.End()
+	exist := false
+	for sliceID := range slice {
+		if slice[sliceID] == item {
+			exist = true
+			break
+		}
+	}
+	return exist
+}
+
 // A function for update exist slice not contain item string
 // The return value is new slice
 func UpdateList(slice []string, item string) []string {
@@ -49,9 +64,9 @@ func UpdateList(slice []string, item string) []string {
 // A function for update exist slice not contain item string
 // The return value is new slice
 func UpdateStingSlice(ctx context.Context, slice []string, item string) []string {
-	_, span := jarger.NewSpan(ctx, "Lib.UpdateStingSlice", nil)
+	ctx, span := jarger.NewSpan(ctx, "Lib.UpdateStingSlice", nil)
 	defer span.End()
-	if !SliceContain(slice, item) {
+	if !CheckStingSliceContain(ctx, slice, item) {
 		slice = append(slice, item)
 	}
 	return slice
@@ -60,6 +75,22 @@ func UpdateStingSlice(ctx context.Context, slice []string, item string) []string
 // A function convert slice to sting
 // The return value is string
 func StringFromList(list []string) (st string) {
+	for i := 0; i < len(list); i++ {
+		if st == "" {
+			st = list[i]
+		} else {
+			st = fmt.Sprintf("%s,%s", st, list[i])
+		}
+
+	}
+	return st
+}
+
+// A function convert slice to sting
+// The return value is string
+func StringFromStingSlice(ctx context.Context, list []string) (st string) {
+	_, span := jarger.NewSpan(ctx, "Lib.StringFromStingSlice", nil)
+	defer span.End()
 	for i := 0; i < len(list); i++ {
 		if st == "" {
 			st = list[i]
@@ -84,11 +115,11 @@ func UpdateStructList(main []string, in []string) []string {
 // A function for update exist slice values from anothe slice
 // The return value is updated slice
 func UpdateStingSliceFromStingSlice(ctx context.Context, main []string, in []string) []string {
-	_, span := jarger.NewSpan(ctx, "Lib.GetStringHash", nil)
+	ctx, span := jarger.NewSpan(ctx, "Lib.GetStringHash", nil)
 	defer span.End()
 	for inID := range in {
 		id := inID
-		main = UpdateList(main, in[id])
+		main = UpdateStingSlice(ctx, main, in[id])
 	}
 	return main
 }
@@ -134,6 +165,8 @@ func SortedMap(m []map[string]string) (out []map[string]string) {
 	return out
 }
 
+// A function for sort slice map`s
+// The return value is sorted slice
 func SortedSliceMapString(ctx context.Context, m []map[string]string) []map[string]string {
 	_, span := jarger.NewSpan(ctx, "Lib.SortedSliceMapString", nil)
 	defer span.End()
@@ -176,7 +209,9 @@ func ListConvert(in interface{}) ([]string, error) {
 	return out, nil
 }
 
-func ConvertInterfaceToSliceString(ctx context.Context, t interface{}) []string {
+// A function for convert interface to slice strings
+// The return value is slice strings
+func ConvertInterfaceToSliceString(ctx context.Context, t interface{}) ([]string, error) {
 	_, span := jarger.NewSpan(ctx, "Lib.ConvertInterfaceToSliceString", nil)
 	defer span.End()
 	r, err := json.Marshal(t)
@@ -184,6 +219,7 @@ func ConvertInterfaceToSliceString(ctx context.Context, t interface{}) []string 
 		span.RecordError(err)
 		span.SetStatus(1, err.Error())
 		Log.Error(err)
+		return nil, err
 	}
 	gr := []string{}
 	err = json.Unmarshal(r, &gr)
@@ -191,11 +227,9 @@ func ConvertInterfaceToSliceString(ctx context.Context, t interface{}) []string 
 		span.RecordError(err)
 		span.SetStatus(1, err.Error())
 		Log.Error(err)
+		return nil, err
 	}
-	if err != nil {
-		Log.Error(err)
-	}
-	return gr
+	return gr, nil
 }
 
 // A function for update slince map by not exist map
@@ -270,6 +304,14 @@ func StandardizeSpaces(s string) string {
 	return strings.Join(strings.Fields(s), " ")
 }
 
+// A function for trim first & last space
+// The return value is trimed string
+func TrimString(ctx context.Context, s string) string {
+	_, span := jarger.NewSpan(ctx, "Lib.TrimString", nil)
+	defer span.End()
+	return strings.Join(strings.Fields(s), " ")
+}
+
 // A function for update slice string by splited values use slice spliters string
 // The return value is slice strings
 func UpdateListBySplit(slice []string, item string, spliters []string) []string {
@@ -305,6 +347,43 @@ func UpdateListBySplit(slice []string, item string, spliters []string) []string 
 	return slice
 }
 
+// A function for update slice string by splited values use slice spliters string
+// The return value is slice strings
+func UpdateStingSliceBySplit(ctx context.Context, slice []string, item string, spliters []string) []string {
+	ctx, span := jarger.NewSpan(ctx, "Lib.UpdateStingSliceBySplit", nil)
+	defer span.End()
+	split := false
+	char := ""
+	if len(spliters) == 0 {
+		spliters = []string{",", "\\", "/"}
+	}
+
+	for i := range spliters {
+		if strings.Contains(item, spliters[i]) {
+			split = true
+			char = spliters[i]
+		}
+	}
+	if split {
+		words := strings.Split(item, char)
+		if len(words) > 0 {
+			for id := range words {
+				w := TrimString(ctx, words[id])
+				if !CheckStingSliceContain(ctx, slice, w) {
+					slice = append(slice, w)
+				}
+			}
+		}
+	} else {
+		if !CheckStingSliceContain(ctx, slice, item) {
+			w := TrimString(ctx, item)
+			slice = append(slice, w)
+		}
+
+	}
+	return slice
+}
+
 // A function for convert interface to slice map
 // The return value is slice map or error
 func MapListConvert(in interface{}) ([]map[string]string, error) {
@@ -322,6 +401,8 @@ func MapListConvert(in interface{}) ([]map[string]string, error) {
 	return out, nil
 }
 
+// A function for convert interface to slice map
+// The return value is slice map or error
 func ConvertInterfaceToSliceMapString(ctx context.Context, in interface{}) ([]map[string]string, error) {
 	_, span := jarger.NewSpan(ctx, "Lib.ConvertInterfaceToSliceMapString", nil)
 	defer span.End()
@@ -343,6 +424,8 @@ func ConvertInterfaceToSliceMapString(ctx context.Context, in interface{}) ([]ma
 	return out, nil
 }
 
+// A function for set multi atributes to span
+// The return set multi atributes to span
 func SpanSetAttribute(sp trace.Span, prefix string, attributs interface{}) {
 	var inInterface map[string]interface{}
 	rawData, err := json.Marshal(attributs)
@@ -382,6 +465,8 @@ func SpanSetAttribute(sp trace.Span, prefix string, attributs interface{}) {
 	}
 }
 
+// A function for decode one interface values to anothe
+// The return set multi atributes to span
 func DecodeInterfaceToInterface(ctx context.Context, data interface{}, out interface{}) error {
 	_, span := jarger.NewSpan(ctx, "Lib.DecodeIn", nil)
 	defer span.End()
